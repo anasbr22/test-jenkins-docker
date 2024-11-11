@@ -1,48 +1,52 @@
-from flask import Flask, request, jsonify
+import http.server
+import socketserver
+import urllib.parse
 
-app = Flask(__name__)
+PORT = 5000
 
-class CalculatorLogic:
-    def __init__(self):
-        self.result = ""
+class CalculatorHandler(http.server.BaseHTTPRequestHandler):
+    def do_GET(self):
+        # Extraire les paramètres de l'URL
+        query_params = urllib.parse.parse_qs(urllib.parse.urlsplit(self.path).query)
+        if 'operation' in query_params:
+            operation = query_params['operation'][0]
+            try:
+                num1 = float(query_params['num1'][0])
+                num2 = float(query_params['num2'][0])
 
-    def reset(self):
-        self.result = ""
+                result = None
+                if operation == 'add':
+                    result = num1 + num2
+                elif operation == 'subtract':
+                    result = num1 - num2
+                elif operation == 'multiply':
+                    result = num1 * num2
+                elif operation == 'divide':
+                    if num2 != 0:
+                        result = num1 / num2
+                    else:
+                        result = "Error: Division by zero"
 
-    def calculate(self):
-        try:
-            self.result = str(eval(self.result))
-        except Exception:
-            self.result = "Erreur"
+                self.send_response(200)
+                self.send_header("Content-type", "text/html")
+                self.end_headers()
+                self.wfile.write(f"Result: {result}".encode())
+            except ValueError:
+                self.send_response(400)
+                self.send_header("Content-type", "text/html")
+                self.end_headers()
+                self.wfile.write(b"Error: Invalid input")
+        else:
+            self.send_response(400)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+            self.wfile.write(b"Error: Missing parameters")
 
-    def append(self, text):
-        self.result += text
+# Configuration du serveur
+def run_server():
+    with socketserver.TCPServer(("", PORT), CalculatorHandler) as httpd:
+        print(f"Serving at port {PORT}")
+        httpd.serve_forever()
 
-    def get_result(self):
-        return self.result
-
-# Initialisation de la logique de calcul
-calc = CalculatorLogic()
-
-@app.route('/')
-def home():
-    return "Bienvenue dans la calculatrice API! Utilisez /append, /calculate, et /reset pour les opérations."
-
-@app.route('/append', methods=['POST'])
-def append():
-    data = request.json
-    calc.append(data.get('input', ''))
-    return jsonify(result=calc.get_result())
-
-@app.route('/calculate', methods=['GET'])
-def calculate():
-    calc.calculate()
-    return jsonify(result=calc.get_result())
-
-@app.route('/reset', methods=['POST'])
-def reset():
-    calc.reset()
-    return jsonify(message="Calculatrice réinitialisée.")
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+if __name__ == '__main__':
+    run_server()
