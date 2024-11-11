@@ -14,4 +14,4 @@ RUN ls -l /app
 EXPOSE 5000
 
 # Commande par défaut pour exécuter l'application avec le chemin complet
-CMD ["cat", "app.py"]
+CMD ["echo", "HELLO MIASD 2024"]
