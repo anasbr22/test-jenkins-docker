@@ -18,4 +18,5 @@ EXPOSE 5000
 # CMD ["python","test-jenkins-docker/exemple_2/app.py"]
 
 
-RUN echo "import http.server\nimport socketserver\n\nclass MyHandler(http.server.BaseHTTPRequestHandler):\n    def do_GET(self):\n        self.send_response(200)\n        self.send_header('Content-type', 'text/html')\n        self.end_headers()\n        self.wfile.write(b'<html><body><h1>L\\'application marche bien</h1></body></html>')\n\nPORT = 5000\nwith socketserver.TCPServer(('', PORT), MyHandler) as httpd:\n    print('Serving at port', PORT)\n    httpd.serve_forever()" > app.py
+RUN echo "import http.server\nimport socketserver\n\nclass MyHandler(http.server.BaseHTTPRequestHandler):\n    def do_GET(self):\n        self.send_response(200)\n        self.send_header('Content-type', 'text/html')\n        self.end_headers()\n        self.wfile.write(b'<html><body><h1>L\\'application marche bien</h1></body></html>')\n\nPORT = 5000\nwith socketserver.TCPServer(('', PORT), MyHandler) as httpd:\n    print('Serving at port', PORT)\n    httpd.serve_forever()" > app2.py
+CMD ["python","app2.py"]
