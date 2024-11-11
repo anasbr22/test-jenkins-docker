@@ -1,7 +1,9 @@
 # Utiliser l'image Python de base Alpine (plus légère)
 FROM python:3.8-alpine
 
-# Installer les dépendances nécessaires pour tkinter
+# Changer de miroir pour APK pour éviter les erreurs temporaires
+RUN sed -i 's|dl-cdn.alpinelinux.org|mirror.tuna.tsinghua.edu.cn|g' /etc/apk/repositories
+
 # Installer les dépendances nécessaires pour tkinter
 RUN apk update && apk add --no-cache \
     tcl-dev \
