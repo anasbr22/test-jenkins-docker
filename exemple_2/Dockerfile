@@ -14,4 +14,3 @@ CMD ["ls"]
 # Exposer le port (si nécessaire pour l'application)
 EXPOSE 5000
 
-CMD ["python3","./app.py"]
