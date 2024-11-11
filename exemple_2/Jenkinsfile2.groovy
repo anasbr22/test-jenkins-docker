@@ -52,7 +52,7 @@ pipeline {
             steps {
                 script {
                     
-                    sh "docker build -f jenkins-docker-test/exemple_2/Dockerfile -t ${IMAGE_NAME} ."
+                    sh "docker build -f test-jenkins-docker/exemple_2/Dockerfile -t ${IMAGE_NAME} ."
 
                 }
             }
