@@ -20,8 +20,9 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                // Définir le PYTHONPATH et exécuter les tests dans une seule commande
-                sh ' python3 -m unittest test-jenkins-docker/exemple_1/test_app.py'
+                // Définir le PYTHONPATH et exécuter les tests 
+                sh 'PYTHONPATH=$PYTHONPATH:test-jenkins-docker/exemple_1 python3 -m unittest test-jenkins-docker/exemple_1/test_app.py'
+
             }
         }
     }
