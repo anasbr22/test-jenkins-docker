@@ -14,3 +14,6 @@ CMD ["ls"]
 # Exposer le port (si nécessaire pour l'application)
 EXPOSE 5000
 
+CMD ["python","test-jenkins-docker/exemple_2/app.py"]
+
+
