@@ -2,7 +2,7 @@
 FROM python:3.8-alpine
 
 # Copier le code de l'application dans le conteneur
-COPY exemple_2 /app
+COPY . /app
 
 # Spécifier le répertoire de travail pour le sous-dossier 'exemple_2'
 WORKDIR /app
