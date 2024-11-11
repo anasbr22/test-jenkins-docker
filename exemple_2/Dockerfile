@@ -1,11 +1,13 @@
 # Utiliser une image de base avec Python
 FROM python:3.8-slim
 
-# Mettre à jour pip
-RUN pip install --upgrade pip
+# Configurer DNS pour assurer la connexion Internet
+RUN echo "nameserver 8.8.8.8" > /etc/resolv.conf && \
+    echo "nameserver 8.8.4.4" >> /etc/resolv.conf
 
-# Installer Flask
-RUN pip install flask
+# Mettre à jour pip et installer Flask
+RUN pip install --upgrade pip && pip install flask
+
 
 # Copier le code de l'application dans le conteneur
 COPY . /app
