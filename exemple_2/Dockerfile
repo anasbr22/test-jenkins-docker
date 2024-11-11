@@ -2,16 +2,16 @@
 FROM python:3.8-alpine
 
 # Copier le code de l'application dans le conteneur
-COPY . /app
+COPY exemple_2 /app
 
-# Spécifier le répertoire de travail 
-WORKDIR /app/exemple_2
+# Spécifier le répertoire de travail pour le sous-dossier 'exemple_2'
+WORKDIR /app
 
-# Afficher le contenu du répertoire 'exemple_2' dans le conteneur
-RUN ls -l
+# Afficher le contenu du répertoire 'exemple_2' dans le conteneur pour le débogage
+RUN ls -l /app
 
 # Exposer le port (si nécessaire pour l'application)
 EXPOSE 5000
 
-# Commande par défaut pour exécuter l'application
-CMD ["python", "app.py"]
+# Commande par défaut pour exécuter l'application avec le chemin complet
+CMD ["python", "/app/app.py"]
