@@ -1,6 +1,15 @@
 # Utiliser l'image Python de base Alpine (plus légère)
 FROM python:3.8-alpine
 
+# Installer les dépendances nécessaires pour tkinter
+RUN apk update && apk add --no-cache \
+    tcl-dev \
+    tk-dev \
+    python3-dev \
+    libx11 && \
+    pip install --no-cache-dir -r requirements.txt
+
+
 # Copier le code de l'application dans le conteneur
 COPY . /app
 
