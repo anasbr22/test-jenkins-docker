@@ -1,52 +1,80 @@
-import http.server
-import socketserver
-import urllib.parse
+import tkinter as tk
 
-PORT = 5000
+# logique de calcul
+class CalculatorLogic:
+    def __init__(self):
+        self.result = ""
 
-class CalculatorHandler(http.server.BaseHTTPRequestHandler):
-    def do_GET(self):
-        # Extraire les paramètres de l'URL
-        query_params = urllib.parse.parse_qs(urllib.parse.urlsplit(self.path).query)
-        if 'operation' in query_params:
-            operation = query_params['operation'][0]
-            try:
-                num1 = float(query_params['num1'][0])
-                num2 = float(query_params['num2'][0])
+    def reset(self):
+        self.result = ""
 
-                result = None
-                if operation == 'add':
-                    result = num1 + num2
-                elif operation == 'subtract':
-                    result = num1 - num2
-                elif operation == 'multiply':
-                    result = num1 * num2
-                elif operation == 'divide':
-                    if num2 != 0:
-                        result = num1 / num2
-                    else:
-                        result = "Error: Division by zero"
+    def calculate(self):
+        try:
+            self.result = str(eval(self.result))
+        except Exception:
+            self.result = "Erreur"
 
-                self.send_response(200)
-                self.send_header("Content-type", "text/html")
-                self.end_headers()
-                self.wfile.write(f"Result: {result}".encode())
-            except ValueError:
-                self.send_response(400)
-                self.send_header("Content-type", "text/html")
-                self.end_headers()
-                self.wfile.write(b"Error: Invalid input")
+    def append(self, text):
+        self.result += text
+
+    def get_result(self):
+        return self.result
+
+
+# Classe qui gère l'interface graphique
+class CalculatorApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Calculatrice")
+        self.root.geometry("400x600")
+
+        # Initialisation de la logique de calcul
+        self.logic = CalculatorLogic()
+        self.result_var = tk.StringVar()
+
+        # Création de l'affichage du résultat
+        self.result_display = tk.Entry(self.root, textvariable=self.result_var, font=("Arial", 24), bd=10, relief="sunken", justify="right")
+        self.result_display.grid(row=0, column=0, columnspan=4)
+
+        # Définition des boutons
+        buttons = [
+            ('7', 1, 0), ('8', 1, 1), ('9', 1, 2), ('/', 1, 3),
+            ('4', 2, 0), ('5', 2, 1), ('6', 2, 2), ('*', 2, 3),
+            ('1', 3, 0), ('2', 3, 1), ('3', 3, 2), ('-', 3, 3),
+            ('0', 4, 0), ('.', 4, 1), ('+', 4, 2), ('=', 4, 3),
+            ('C', 5, 0, 2), ('Exit', 5, 2, 2)
+        ]
+
+        # Création dynamique des boutons
+        for button in buttons:
+            if len(button) == 3:
+                text, row, col = button
+                self.create_button(text, row, col)
+            elif len(button) == 4:
+                text, row, col, colspan = button
+                self.create_button(text, row, col, colspan)
+
+    def create_button(self, text, row, col, colspan=1):
+        button = tk.Button(self.root, text=text, font=("Arial", 18), width=6, height=2, command=lambda: self.on_button_click(text))
+        button.grid(row=row, column=col, columnspan=colspan)
+
+    def on_button_click(self, text):
+        if text == "C":
+            self.logic.reset()
+        elif text == "=":
+            self.logic.calculate()
+        elif text == "Exit":
+            self.root.quit()
         else:
-            self.send_response(400)
-            self.send_header("Content-type", "text/html")
-            self.end_headers()
-            self.wfile.write(b"Error: Missing parameters")
+            self.logic.append(text)
 
-# Configuration du serveur
-def run_server():
-    with socketserver.TCPServer(("", PORT), CalculatorHandler) as httpd:
-        print(f"Serving at port {PORT}")
-        httpd.serve_forever()
+        # Met à jour l'affichage du résultat
+        self.result_var.set(self.logic.get_result())
 
-if __name__ == '__main__':
-    run_server()
+def run_calculator():
+    root = tk.Tk()
+    app = CalculatorApp(root)
+    root.mainloop()
+
+if __name__ == "__main__":
+    run_calculator()
