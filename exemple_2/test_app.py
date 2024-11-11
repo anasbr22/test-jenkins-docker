@@ -1,44 +1,42 @@
+
 import unittest
-import requests
+from app import CalculatorLogic  
 
-class TestCalculatorApp(unittest.TestCase):
+class TestCalculatorLogic(unittest.TestCase):
 
-    BASE_URL = "http://localhost:5000"
+    def setUp(self):
+        # Initialise la logique sans interface graphique
+        self.logic = CalculatorLogic()
 
-    def test_add(self):
-        response = requests.get(f"{self.BASE_URL}/?operation=add&num1=10&num2=5")
-        self.assertEqual(response.status_code, 200)
-        self.assertIn("Result: 15.0", response.text)
+    def test_initial_result(self):
+        # Teste l'état initial 
+        self.assertEqual(self.logic.get_result(), "")
 
-    def test_subtract(self):
-        response = requests.get(f"{self.BASE_URL}/?operation=subtract&num1=10&num2=5")
-        self.assertEqual(response.status_code, 200)
-        self.assertIn("Result: 5.0", response.text)
+    def test_reset(self):
+        # Teste la réinitialisation de l'application
+        self.logic.append("123")
+        self.logic.reset()
+        self.assertEqual(self.logic.get_result(), "")
 
-    def test_multiply(self):
-        response = requests.get(f"{self.BASE_URL}/?operation=multiply&num1=10&num2=5")
-        self.assertEqual(response.status_code, 200)
-        self.assertIn("Result: 50.0", response.text)
+    def test_calculate(self):
+        # Teste le calcul de l'expression
+        self.logic.append("2+2")
+        self.logic.calculate()
+        self.assertEqual(self.logic.get_result(), "4")
 
-    def test_divide(self):
-        response = requests.get(f"{self.BASE_URL}/?operation=divide&num1=10&num2=5")
-        self.assertEqual(response.status_code, 200)
-        self.assertIn("Result: 2.0", response.text)
+    def test_calculate_invalid_expression(self):
+        # Teste le calcul d'une expression invalide
+        self.logic.append("2/0")
+        self.logic.calculate()
+        self.assertEqual(self.logic.get_result(), "Erreur")
 
-    def test_divide_by_zero(self):
-        response = requests.get(f"{self.BASE_URL}/?operation=divide&num1=10&num2=0")
-        self.assertEqual(response.status_code, 200)
-        self.assertIn("Error: Division by zero", response.text)
+    def test_append(self):
+        # Teste l'ajout de caractères à l'expression
+        self.logic.append("1")
+        self.logic.append("+")
+        self.logic.append("1")
+        self.assertEqual(self.logic.get_result(), "1+1")
 
-    def test_invalid_input(self):
-        response = requests.get(f"{self.BASE_URL}/?operation=add&num1=10&num2=abc")
-        self.assertEqual(response.status_code, 400)
-        self.assertIn("Error: Invalid input", response.text)
-
-    def test_missing_parameters(self):
-        response = requests.get(f"{self.BASE_URL}/?operation=add")
-        self.assertEqual(response.status_code, 400)
-        self.assertIn("Error: Missing parameters", response.text)
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
+
