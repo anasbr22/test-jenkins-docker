@@ -1,6 +1,12 @@
 # Utiliser une image de base contenant Python
 FROM python:3.8-alpine
 
+# Utiliser une image de base contenant Python
+FROM python:3.8-alpine
+
+# Installer Flask
+RUN pip install flask
+
 # Copier le code de l'application dans le conteneur
 COPY . /app
 
