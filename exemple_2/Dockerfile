@@ -1,8 +1,8 @@
-# Utiliser une image de base contenant Python
-FROM python:3.8-alpine
+# Utiliser une image de base avec Python
+FROM python:3.8-slim
 
-# Utiliser une image de base contenant Python
-FROM python:3.8-alpine
+# Mettre à jour pip
+RUN pip install --upgrade pip
 
 # Installer Flask
 RUN pip install flask
