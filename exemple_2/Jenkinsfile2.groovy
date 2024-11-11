@@ -78,7 +78,7 @@ pipeline {
 
     post {
         always {
-            // Actions à réaliser à la fin du pipeline (en succès ou échec)
+            // Actions à réaliser à la fin du pipeline 
             echo 'Pipeline terminé.'
         }
         failure {
