@@ -7,6 +7,9 @@ COPY . /app
 # Spécifier le répertoire de travail 
 WORKDIR /app/exemple_2
 
+# Afficher le contenu du répertoire 'exemple_2' dans le conteneur
+RUN ls -l
+
 # Exposer le port (si nécessaire pour l'application)
 EXPOSE 5000
 
