@@ -1,6 +1,7 @@
-import tkinter as tk
+from flask import Flask, request, jsonify
 
-# logique de calcul
+app = Flask(__name__)
+
 class CalculatorLogic:
     def __init__(self):
         self.result = ""
@@ -20,61 +21,28 @@ class CalculatorLogic:
     def get_result(self):
         return self.result
 
+# Initialisation de la logique de calcul
+calc = CalculatorLogic()
 
-# Classe qui gère l'interface graphique
-class CalculatorApp:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Calculatrice")
-        self.root.geometry("400x600")
+@app.route('/')
+def home():
+    return "Bienvenue dans la calculatrice API! Utilisez /append, /calculate, et /reset pour les opérations."
 
-        # Initialisation de la logique de calcul
-        self.logic = CalculatorLogic()
-        self.result_var = tk.StringVar()
+@app.route('/append', methods=['POST'])
+def append():
+    data = request.json
+    calc.append(data.get('input', ''))
+    return jsonify(result=calc.get_result())
 
-        # Création de l'affichage du résultat
-        self.result_display = tk.Entry(self.root, textvariable=self.result_var, font=("Arial", 24), bd=10, relief="sunken", justify="right")
-        self.result_display.grid(row=0, column=0, columnspan=4)
+@app.route('/calculate', methods=['GET'])
+def calculate():
+    calc.calculate()
+    return jsonify(result=calc.get_result())
 
-        # Définition des boutons
-        buttons = [
-            ('7', 1, 0), ('8', 1, 1), ('9', 1, 2), ('/', 1, 3),
-            ('4', 2, 0), ('5', 2, 1), ('6', 2, 2), ('*', 2, 3),
-            ('1', 3, 0), ('2', 3, 1), ('3', 3, 2), ('-', 3, 3),
-            ('0', 4, 0), ('.', 4, 1), ('+', 4, 2), ('=', 4, 3),
-            ('C', 5, 0, 2), ('Exit', 5, 2, 2)
-        ]
-
-        # Création dynamique des boutons
-        for button in buttons:
-            if len(button) == 3:
-                text, row, col = button
-                self.create_button(text, row, col)
-            elif len(button) == 4:
-                text, row, col, colspan = button
-                self.create_button(text, row, col, colspan)
-
-    def create_button(self, text, row, col, colspan=1):
-        button = tk.Button(self.root, text=text, font=("Arial", 18), width=6, height=2, command=lambda: self.on_button_click(text))
-        button.grid(row=row, column=col, columnspan=colspan)
-
-    def on_button_click(self, text):
-        if text == "C":
-            self.logic.reset()
-        elif text == "=":
-            self.logic.calculate()
-        elif text == "Exit":
-            self.root.quit()
-        else:
-            self.logic.append(text)
-
-        # Met à jour l'affichage du résultat
-        self.result_var.set(self.logic.get_result())
-
-def run_calculator():
-    root = tk.Tk()
-    app = CalculatorApp(root)
-    root.mainloop()
+@app.route('/reset', methods=['POST'])
+def reset():
+    calc.reset()
+    return jsonify(message="Calculatrice réinitialisée.")
 
 if __name__ == "__main__":
-    run_calculator()
+    app.run(host="0.0.0.0", port=5000)
