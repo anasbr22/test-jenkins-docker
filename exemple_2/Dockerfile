@@ -1,16 +1,14 @@
-# Utiliser l'image Python de base Alpine (plus légère)
-FROM python:3.8-alpine
+# Utiliser une image de base contenant Python
+FROM python:3.11
 
-# Changer de miroir pour APK pour éviter les erreurs temporaires
-RUN sed -i 's|dl-cdn.alpinelinux.org|mirror.tuna.tsinghua.edu.cn|g' /etc/apk/repositories
+# Installer les dépendances nécessaires pour Tkinter et X11
+RUN apt-get update && apt-get install -y \
+    python3-tk \
+    x11-apps \
+    && rm -rf /var/lib/apt/lists/*
 
-# Installer les dépendances nécessaires pour tkinter
-RUN apk update && apk add --no-cache \
-    tcl-dev \
-    tk-dev \
-    python3-dev \
-    libx11
-
+# Installer les dépendances Python
+RUN pip install  tkinter
 
 # Copier le code de l'application dans le conteneur
 COPY . /app
