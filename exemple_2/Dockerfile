@@ -1,14 +1,5 @@
 # Utiliser une image de base contenant Python
-FROM python:3.11
-
-# Installer les dépendances nécessaires pour Tkinter et X11
-RUN apt-get update && apt-get install -y \
-    python3-tk \
-    x11-apps \
-    && rm -rf /var/lib/apt/lists/*
-
-# Installer les dépendances Python
-RUN pip install  tkinter
+FROM python:3.8-alpine
 
 # Copier le code de l'application dans le conteneur
 COPY . /app
@@ -20,7 +11,7 @@ WORKDIR /app
 CMD ["pwd"]
 CMD ["ls"]
 
-# Exposer le port (si nécessaire pour l'application)
+# Exposer le port 
 EXPOSE 5000
 
 CMD ["python","test-jenkins-docker/exemple_2/app.py"]
