@@ -48,6 +48,16 @@ pipeline {
             }
         }
 
+        stage('Verify Files') {
+             steps {
+                script {
+                   echo "Listing files in the app directory:"
+                   sh "ls -l ${APP_DIR}"
+             }
+         }
+       }
+
+
         stage('Build Docker Image') {
             steps {
                 script {
