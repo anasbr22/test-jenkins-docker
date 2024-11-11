@@ -5,8 +5,8 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 // Cloner le dépôt
-                sh 'rm -rf test-jenkins-python'
-                sh 'git clone https://github.com/anasbr22/test-jenkins-python'
+                sh 'rm -rf test-jenkins-docker'
+                sh 'git clone https://github.com/anasbr22/test-jenkins-docker.git'
             }
         }
 
@@ -14,14 +14,14 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 // Utiliser pip3 pour installer les dépendances
-                sh 'pip3 install --user -r test-jenkins-python/exemple_1/requirements.txt'
+                sh 'pip3 install --user -r test-jenkins-docker/exemple_1/requirements.txt'
             }
         }
 
         stage('Run Tests') {
             steps {
                 // Définir le PYTHONPATH et exécuter les tests dans une seule commande
-                sh 'PYTHONPATH=$PYTHONPATH:test-jenkins-python python3 -m unittest test-jenkins-python/exemple_1/test_app.py'
+                sh 'PYTHONPATH=$PYTHONPATH:test-jenkins-docker python3 -m unittest test-jenkins-docker/exemple_1/test_app.py'
             }
         }
     }
