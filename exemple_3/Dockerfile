@@ -4,10 +4,10 @@ FROM node:16-alpine
 # Créer et définir le répertoire de travail
 WORKDIR /app
 
-# Copier uniquement les fichiers nécessaires (package.json et package-lock.json d'abord)
+# Copier uniquement les fichiers nécessaires pour l'application Node.js
 COPY package*.json ./
 
-# Installer les dépendances (optimisé en séparant les étapes pour profiter du cache Docker)
+# Installer les dépendances de Node.js
 RUN npm install
 
 # Copier le reste des fichiers du projet dans le conteneur
@@ -16,5 +16,5 @@ COPY . .
 # Exposer le port de l'application
 EXPOSE 5000
 
-# Lancer l'application
-CMD ["node", "app.js"]
+# Lancer le serveur Node.js
+CMD ["node", "public/app.js"]
