@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    tools {
+        // Utiliser NodeJS installé sur Jenkins
+        nodejs 'nodejs-23'  
+    }
+
     environment {
         IMAGE_NAME = 'calculator-app'
         CONTAINER_NAME = 'calculator-app-container'
@@ -23,7 +28,7 @@ pipeline {
                 script {
                     // Accéder au dossier 'exemple_3' et installer les dépendances
                     dir('exemple_3') {
-                        sh 'npm install'
+                        sh 'npm install'  // Utiliser npm pour installer les dépendances
                     }
                 }
             }
@@ -32,7 +37,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    // Exécuter les tests unitaires (si vous avez un fichier de tests)
+                    // Exécuter les tests unitaires
                     dir('exemple_3') {
                         sh 'npm test'
                     }
@@ -43,19 +48,11 @@ pipeline {
         stage('Clean Up Docker') {
             steps {
                 script {
-                    // Supprimer le conteneur Docker s'il existe
-                    sh """
-                    if docker ps -a --format '{{.Names}}' | grep -q ${CONTAINER_NAME}; then
-                        docker rm -f ${CONTAINER_NAME}
-                    fi
-                    """
+                    // Supprimer les conteneurs Docker s'ils existent
+                    sh 'docker ps -a -q | xargs -r docker rm -f'
 
-                    // Supprimer l'image Docker s'il existe
-                    sh """
-                    if docker images --format '{{.Repository}}' | grep -q ${REGISTRY}/${REPOSITORY}; then
-                        docker rmi -f ${REGISTRY}/${REPOSITORY}:${BUILD_ID}
-                    fi
-                    """
+                    // Supprimer les images Docker existantes
+                    sh 'docker images -q ${REGISTRY}/${REPOSITORY}:latest | xargs -r docker rmi -f'
                 }
             }
         }
@@ -63,7 +60,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Construire l'image Docker dans le dossier 'exemple_3'
+                    // Construire l'image Docker
                     dir('exemple_3') {
                         sh 'docker build -t ${REGISTRY}/${REPOSITORY}:${BUILD_ID} .'
                     }
@@ -75,12 +72,9 @@ pipeline {
             steps {
                 script {
                     // Lancer l'image Docker dans un conteneur
-                    sh """
-                    docker run -d -p 80:80 --name ${CONTAINER_NAME} ${REGISTRY}/${REPOSITORY}:${BUILD_ID}
-                    """
-
-                    // Afficher l'URL d'accès à l'application
-                    echo "Application is running at http://localhost:80"
+                    sh 'docker run -d -p 80:80 ${REGISTRY}/${REPOSITORY}:${BUILD_ID}'
+                    // Afficher l'URL de l'application
+                    echo 'Application running at http://localhost:80'
                 }
             }
         }
