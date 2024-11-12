@@ -1,29 +1,26 @@
-const chai = require('chai');
-const chaiHttp = require('chai-http');
-const expect = chai.expect;
-
-chai.use(chaiHttp);
-
-const server = 'http://localhost:80';  // L'adresse où l'application sera déployée
+const request = require('supertest');
+const app = require('../app');  // Assurez-vous que ce chemin est correct
 
 describe('Calculator API', () => {
-    it('should return the correct result for addition', (done) => {
-        chai.request(server)
-            .get('/calculate?a=2&b=3')
-            .end((err, res) => {
-                expect(res.status).to.equal(200);
-                expect(res.text).to.include('5'); // Assure que le résultat est 5
-                done();
-            });
-    });
+  it('should return the correct result for addition', (done) => {
+    request(app)
+      .get('/calculate?a=5&b=3')
+      .expect(200)  // Vérifier que le statut de la réponse est 200
+      .end((err, res) => {
+        if (err) return done(err);
+        res.body.result.should.equal(8);  // Vérifier que le résultat est 8
+        done();
+      });
+  });
 
-    it('should return an error for invalid input', (done) => {
-        chai.request(server)
-            .get('/calculate?a=invalid&b=3')
-            .end((err, res) => {
-                expect(res.status).to.equal(500); // L'application devrait renvoyer une erreur sur entrée invalide
-                done();
-            });
-    });
+  it('should return an error for invalid input', (done) => {
+    request(app)
+      .get('/calculate?a=invalid&b=3')
+      .expect(400)  // Vérifier que le statut de la réponse est 400 pour une entrée invalide
+      .end((err, res) => {
+        if (err) return done(err);
+        res.body.error.should.equal('Invalid input, must be numbers');
+        done();
+      });
+  });
 });
-
