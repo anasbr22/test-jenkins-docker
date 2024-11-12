@@ -1,0 +1,82 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = 'calculator-app'
+        REGISTRY = 'docker.io'
+        REPOSITORY = 'anasbr22/calculator-app'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    // Cloner le repository contenant l'application
+                    git url: 'https://github.com/anasbr22/test-jenkins-docker.git', branch: 'main'
+                }
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                script {
+                    // Accéder au dossier 'exemple_3' et installer les dépendances
+                    dir('exemple_3') {
+                        sh 'npm install'
+                    }
+                }
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                script {
+                    // Exécuter les tests unitaires avec Mocha
+                    dir('exemple_3') {
+                        sh 'npm test'
+                    }
+                }
+            }
+        }
+
+        stage('Clean Up Docker') {
+            steps {
+                script {
+                    // Supprimer les conteneurs Docker s'ils existent
+                    sh 'docker ps -a -q | xargs -r docker rm -f'
+
+                    // Supprimer les images Docker existantes
+                    sh 'docker images -q ${REGISTRY}/${REPOSITORY}:latest | xargs -r docker rmi -f'
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Construire l'image Docker
+                    dir('exemple_3') {
+                        sh 'docker build -t ${REGISTRY}/${REPOSITORY}:${BUILD_ID} .'
+                    }
+                }
+            }
+        }
+
+        stage('Run Docker Container') {
+            steps {
+                script {
+                    // Lancer l'image Docker dans un conteneur
+                    sh 'docker run -d -p 80:80 ${REGISTRY}/${REPOSITORY}:${BUILD_ID}'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            // Nettoyer les images locales
+            sh 'docker system prune -f'
+        }
+    }
+}
+
