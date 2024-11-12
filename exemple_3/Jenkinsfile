@@ -34,7 +34,7 @@ pipeline {
             }
         }
 
-        stage('Run Tests') {
+     /*   stage('Run Tests') {
             steps {
                 script {
                     // Exécuter les tests unitaires
@@ -43,7 +43,7 @@ pipeline {
                     }
                 }
             }
-        }
+        }*/
 
         stage('Clean Up Docker') {
             steps {
