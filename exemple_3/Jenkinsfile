@@ -37,7 +37,7 @@ pipeline {
             steps {
                 script {
                     // Vérifier si un conteneur avec le même nom existe et le supprimer
-                    sh '''
+                    sh '''#!/bin/bash
                     if [ $(docker ps -a -q -f name=${CONTAINER_NAME}) ]; then
                         docker rm -f ${CONTAINER_NAME}
                     fi
