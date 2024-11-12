@@ -2,8 +2,7 @@ pipeline {
     agent any
 
     tools {
-        // Utiliser NodeJS installé sur Jenkins
-        nodejs 'nodejs-23'  
+        nodejs 'nodejs-23'
     }
 
     environment {
@@ -34,25 +33,20 @@ pipeline {
             }
         }
 
-     /*   stage('Run Tests') {
-            steps {
-                script {
-                    // Exécuter les tests unitaires
-                    dir('exemple_3') {
-                        sh 'npm test'
-                    }
-                }
-            }
-        }*/
-
         stage('Clean Up Docker') {
             steps {
                 script {
-                    // Supprimer les conteneurs Docker s'ils existent
-                    sh 'docker ps -a -q | xargs -r docker rm -f'
+                    // Vérifier si un conteneur avec le même nom existe et le supprimer
+                    sh '''
+                    if [ $(docker ps -a -q -f name=${CONTAINER_NAME}) ]; then
+                        docker rm -f ${CONTAINER_NAME}
+                    fi
 
-                    // Supprimer les images Docker existantes
-                    sh 'docker images -q ${REGISTRY}/${REPOSITORY}:latest | xargs -r docker rmi -f'
+                    // Supprimer l'image Docker si elle existe déjà
+                    if [ $(docker images -q ${REGISTRY}/${REPOSITORY}:${IMAGE_NAME}) ]; then
+                        docker rmi -f ${REGISTRY}/${REPOSITORY}:${IMAGE_NAME}
+                    fi
+                    '''
                 }
             }
         }
@@ -60,31 +54,39 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Construire l'image Docker
+                    // Construire l'image Docker avec un nom fixe
                     dir('exemple_3') {
-                        sh 'docker build -t ${REGISTRY}/${REPOSITORY}:${BUILD_ID} .'
+                        sh 'docker build -t ${REGISTRY}/${REPOSITORY}:${IMAGE_NAME} .'
                     }
                 }
             }
         }
 
-      stage('Run Docker Container') {
-             steps {
-                   script {
-                           // Lancer l'image Docker dans un conteneur et exposer le port 5000
-                           sh 'docker run -d -p 5000:5000 ${REGISTRY}/${REPOSITORY}:${BUILD_ID}'
-                          // Afficher l'URL de l'application
-                           echo 'Application running at http://localhost:5000'
-                    }
-                }
-          }
+        stage('Run Docker Container') {
+            steps {
+                script {
+                    // Vérifier si un conteneur est déjà en cours d'exécution avec ce nom
+                    def containerExists = sh(script: "docker ps -q -f name=${CONTAINER_NAME}", returnStdout: true).trim()
 
+                    // Si le conteneur existe, l'arrêter et le supprimer
+                    if (containerExists) {
+                        sh "docker stop ${CONTAINER_NAME}"
+                        sh "docker rm ${CONTAINER_NAME}"
+                    }
+
+                    // Lancer un nouveau conteneur
+                    sh "docker run -d --name ${CONTAINER_NAME} -p 5000:5000 ${REGISTRY}/${REPOSITORY}:${IMAGE_NAME}"
+                    
+                    // Afficher l'URL de l'application
+                    echo 'Application running at http://localhost:5000'
+                }
+            }
+        }
     }
 
     post {
         always {
-           
-            echo "Pipeline Termine."
+            echo "Pipeline Terminé."
         }
     }
 }
