@@ -7,6 +7,9 @@
     "test": "mocha",
     "start": "node app.js"
   },
+  "scripts": {
+    "test": "mocha --reporter spec"
+  },
   "dependencies": {
     "express": "^4.17.3"
   },
