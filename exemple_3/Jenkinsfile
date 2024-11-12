@@ -82,8 +82,8 @@ pipeline {
 
     post {
         always {
-            // Nettoyer les images locales
-            sh 'docker system prune -f'
+           
+            echo "Pipeline Termine."
         }
     }
 }
