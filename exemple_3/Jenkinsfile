@@ -66,7 +66,7 @@ pipeline {
             steps {
                 script {
                     // Lancer un nouveau conteneur en mode détaché et en liant le port 5000
-                    sh "docker run -d --name ${CONTAINER_NAME} -p ${PORT}:${PORT} ${IMAGE_NAME}"
+                    sh "docker run  --name ${CONTAINER_NAME} -p ${PORT}:${PORT} ${IMAGE_NAME}"
                     
                     // Afficher l'URL de l'application
                     echo "Application running at http://localhost:${PORT}"
