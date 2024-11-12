@@ -4,35 +4,23 @@ const app = require('../app');  // Assurez-vous que ce chemin est correct
 describe('Calculator API', () => {
   it('should return the correct result for addition', (done) => {
     request(app)
-      .get('/calculate?a=1&b=2')
-      .expect(200)  // S'assurer que la réponse HTTP est 200
+      .get('/calculate?a=5&b=3')
+      .expect(200)  // Vérifier que le statut de la réponse est 200
       .end((err, res) => {
         if (err) return done(err);
-        try {
-          // Vérifier que la réponse contient le bon résultat
-          res.body.should.have.property('result');
-          res.body.result.should.equal(3);
-          done();
-        } catch (e) {
-          done(e);
-        }
+        res.body.result.should.equal(8);  // Vérifier que le résultat est 8
+        done();
       });
   });
 
   it('should return an error for invalid input', (done) => {
     request(app)
-      .get('/calculate?a=invalid&b=2')
-      .expect(400)  // Attendre une erreur 400 en cas d'entrée invalide
+      .get('/calculate?a=invalid&b=3')
+      .expect(400)  // Vérifier que le statut de la réponse est 400 pour une entrée invalide
       .end((err, res) => {
         if (err) return done(err);
-        try {
-          // Vérifier que la réponse d'erreur est appropriée
-          res.body.should.have.property('error');
-          res.body.error.should.equal('Invalid input');
-          done();
-        } catch (e) {
-          done(e);
-        }
+        res.body.error.should.equal('Invalid input, must be numbers');
+        done();
       });
   });
 });
