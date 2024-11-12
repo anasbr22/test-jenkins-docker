@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const port = 80;
+const port = 5000;
 
 // Middleware pour parse les données JSON (si vous voulez accepter des requêtes POST avec des JSON)
 app.use(express.json());
