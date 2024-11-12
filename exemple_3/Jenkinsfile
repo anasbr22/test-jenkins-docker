@@ -68,16 +68,17 @@ pipeline {
             }
         }
 
-        stage('Run Docker Container') {
-            steps {
-                script {
-                    // Lancer l'image Docker dans un conteneur
-                    sh 'docker run -d -p 80:80 ${REGISTRY}/${REPOSITORY}:${BUILD_ID}'
-                    // Afficher l'URL de l'application
-                    echo 'Application running at http://localhost:80'
-                }
+       stage('Run Docker Container') {
+             steps {
+                 script {
+                     // Lancer l'image Docker dans un conteneur
+                      sh 'docker run -d -p 80:80 ${REGISTRY}/${REPOSITORY}:${BUILD_ID} tail -f /dev/null'
+                     // Afficher l'URL de l'application
+                     echo 'Application running at http://localhost:80'
+               }
             }
-        }
+          }
+
     }
 
     post {
