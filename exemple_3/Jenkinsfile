@@ -10,6 +10,7 @@ pipeline {
         CONTAINER_NAME = 'calculator-app-container'
         REGISTRY = 'docker.io'
         REPOSITORY = 'anasbr22/calculator-app'
+        PORT = '5000'
     }
 
     stages {
@@ -33,20 +34,19 @@ pipeline {
             }
         }
 
-        stage('Clean Up Docker') {
+        stage('Stop Existing Container') {
+            steps {
+                // Arrêter et supprimer un conteneur existant
+                sh "docker stop ${CONTAINER_NAME} || true"
+                sh "docker rm ${CONTAINER_NAME} || true"
+            }
+        }
+
+        stage('Remove Old Docker Image') {
             steps {
                 script {
-                    // Vérifier si un conteneur avec le même nom existe et le supprimer
-                    sh '''#!/bin/bash
-                    if [ $(docker ps -a -q -f name=${CONTAINER_NAME}) ]; then
-                        docker rm -f ${CONTAINER_NAME}
-                    fi
-
-                    // Supprimer l'image Docker si elle existe déjà
-                    if [ $(docker images -q ${REGISTRY}/${REPOSITORY}:${IMAGE_NAME}) ]; then
-                        docker rmi -f ${REGISTRY}/${REPOSITORY}:${IMAGE_NAME}
-                    fi
-                    '''
+                    // Suppression de l'image si elle existe déjà
+                    sh "docker rmi -f ${IMAGE_NAME} || true"
                 }
             }
         }
@@ -56,7 +56,7 @@ pipeline {
                 script {
                     // Construire l'image Docker avec un nom fixe
                     dir('exemple_3') {
-                        sh 'docker build -t ${REGISTRY}/${REPOSITORY}:${IMAGE_NAME} .'
+                        sh "docker build -f ./Dockerfile -t ${IMAGE_NAME} ."
                     }
                 }
             }
@@ -65,20 +65,11 @@ pipeline {
         stage('Run Docker Container') {
             steps {
                 script {
-                    // Vérifier si un conteneur est déjà en cours d'exécution avec ce nom
-                    def containerExists = sh(script: "docker ps -q -f name=${CONTAINER_NAME}", returnStdout: true).trim()
-
-                    // Si le conteneur existe, l'arrêter et le supprimer
-                    if (containerExists) {
-                        sh "docker stop ${CONTAINER_NAME}"
-                        sh "docker rm ${CONTAINER_NAME}"
-                    }
-
-                    // Lancer un nouveau conteneur
-                    sh "docker run -d --name ${CONTAINER_NAME} -p 5000:5000 ${REGISTRY}/${REPOSITORY}:${IMAGE_NAME}"
+                    // Lancer un nouveau conteneur en mode détaché et en liant le port 5000
+                    sh "docker run -d --name ${CONTAINER_NAME} -p ${PORT}:${PORT} ${IMAGE_NAME}"
                     
                     // Afficher l'URL de l'application
-                    echo 'Application running at http://localhost:5000'
+                    echo "Application running at http://localhost:${PORT}"
                 }
             }
         }
