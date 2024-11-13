@@ -1,6 +1,7 @@
 const request = require('supertest');
-const app = require('../app');  // Import the app (does not start the server by default)
+const app = require('../app');  // Import the app (without starting the server)
 
+// Declare a variable for the server
 let server;
 
 before(function(done) {
