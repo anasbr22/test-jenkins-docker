@@ -34,7 +34,7 @@ pipeline {
             }
         }
 
-        /* stage('Run Tests') {
+       /*  stage('Run Tests') {
             steps {
                 script {
                     // Exécuter les tests unitaires avec Mocha
@@ -73,38 +73,26 @@ pipeline {
             }
         }
 
-        stage('Run and Test') {
-            parallel {
-                stage('Run Docker Container') {
-                    steps {
-                        script {
-                            // Lancer un nouveau conteneur en mode détaché et en liant le port 5000
-                            sh "docker run --name ${CONTAINER_NAME} -p ${PORT}:${PORT} -d ${IMAGE_NAME}"
-                            // Afficher l'URL de l'application
-                            echo "Application running at http://localhost:${PORT}"
-                        }
-                    }
-                }
 
-                stage('Run Tests') {
-                    steps {
-                        script {
-                            // Exécuter les tests unitaires avec Mocha
-                            dir('exemple_3') {
-                                sh 'npm test'
-                            }
-                        }
-                    }
+
+        stage('Run Docker Container') {
+            steps {
+                script {
+                    // Lancer un nouveau conteneur en mode détaché et en liant le port 5000
+                      sh "docker run  --name ${CONTAINER_NAME} -p ${PORT}:${PORT} ${IMAGE_NAME}"
+                    // Afficher l'URL de l'application
+                      echo "Application running at http://localhost:${PORT}"
                 }
             }
         }
+
+        
     }
 
     post {
         always {
             echo "Pipeline Terminé."
             sh "docker stop ${CONTAINER_NAME} || true"
-            sh "docker rm ${CONTAINER_NAME} || true"
         }
     }
 }
