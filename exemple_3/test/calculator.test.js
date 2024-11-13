@@ -1,5 +1,5 @@
 const request = require('supertest');
-const app = require('../app');  // Assurez-vous que ce chemin est correct
+const app = require('../app');  // Importer l'application sans démarrer le serveur
 
 describe('Calculator API', () => {
   it('should return the correct result for addition', (done) => {
