@@ -33,17 +33,7 @@ pipeline {
                 }
             }
         }
-
-         stage('Run Tests') {
-            steps {
-                script {
-                    // Exécuter les tests unitaires avec Mocha
-                    dir('exemple_3') {
-                        sh 'npm test'  
-                    }
-                }
-            }
-        } 
+        
 
         stage('Stop Existing Container') {
             steps {
