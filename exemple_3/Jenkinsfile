@@ -34,7 +34,7 @@ pipeline {
             }
         }
 
-       /*  stage('Run Tests') {
+         stage('Run Tests') {
             steps {
                 script {
                     // Exécuter les tests unitaires avec Mocha
@@ -43,7 +43,7 @@ pipeline {
                     }
                 }
             }
-        } */
+        } 
 
         stage('Stop Existing Container') {
             steps {
