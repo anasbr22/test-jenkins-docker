@@ -2,38 +2,38 @@ const express = require('express');
 const app = express();
 const port = 5000;
 
-// Middleware pour parser les données JSON (si vous voulez accepter des requêtes POST avec des JSON)
+// Middleware for parsing JSON (if you want to accept POST requests with JSON)
 app.use(express.json());
 
-// Servir les fichiers statiques (HTML, CSS, JS)
+// Serve static files (HTML, CSS, JS)
 app.use(express.static('public'));
 
-// Route principale pour afficher la calculatrice
+
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/public/index.html');
 });
 
-// Route pour effectuer un calcul (exemple : addition)
+//  (example: addition)
 app.get('/calculate', (req, res) => {
     const a = parseFloat(req.query.a);
     const b = parseFloat(req.query.b);
 
-    // Vérifier les entrées pour s'assurer qu'elles sont valides
+    // inputs validation 
     if (isNaN(a) || isNaN(b)) {
         return res.status(400).json({ error: 'Invalid input, must be numbers' });
     }
 
-    // Effectuer l'addition
+    // Perform the addition
     const result = a + b;
 
-    // Retourner le résultat en format JSON
+    // Return the result in JSON format
     res.status(200).json({ result });
 });
 
-// Exporter l'application sans démarrer le serveur
+// Export the application 
 module.exports = app;
 
-// Démarrer le serveur si ce fichier est exécuté directement
+// Only start the server if this file is executed directly
 if (require.main === module) {
     app.listen(port, () => {
         console.log(`Calculator app listening at http://localhost:${port}`);
