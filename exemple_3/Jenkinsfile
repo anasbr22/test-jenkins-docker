@@ -92,7 +92,7 @@ pipeline {
             echo "Pipeline Terminé."
             sh "docker stop ${CONTAINER_NAME} || true"
             // Copier l'artefact spécifique vers un chemin local
-            sh "mkdir -p $(dirname ${LOCAL_ARTIFACT_PATH})"
+           sh "mkdir -p \$(dirname ${LOCAL_ARTIFACT_PATH})"
             sh "cp exemple_3/output.log ${LOCAL_ARTIFACT_PATH} || true"
         }
     }
