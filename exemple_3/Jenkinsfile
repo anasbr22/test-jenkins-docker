@@ -73,6 +73,8 @@ pipeline {
             }
         }
 
+parallel {
+
         stage('Run Docker Container') {
             steps {
                 script {
@@ -83,6 +85,18 @@ pipeline {
                 }
             }
         }
+
+         stage('Run Tests') {
+            steps {
+                script {
+                    // Exécuter les tests unitaires avec Mocha
+                    dir('exemple_3') {
+                        sh 'npm test'  
+                    }
+                }
+            }
+
+         }  // ***
     }
 
     post {
