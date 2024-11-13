@@ -11,6 +11,7 @@ pipeline {
         REGISTRY = 'docker.io'
         REPOSITORY = 'anasbr22/calculator-app'
         PORT = '5000'
+        LOCAL_ARTIFACTS_PATH = '/home/anas/Desktop/artifacts-jenkins/output.log'
     }
 
     stages {
@@ -90,6 +91,9 @@ pipeline {
         always {
             echo "Pipeline Terminé."
             sh "docker stop ${CONTAINER_NAME} || true"
+            // Copier l'artefact spécifique vers un chemin local
+            sh "mkdir -p $(dirname ${LOCAL_ARTIFACT_PATH})"
+            sh "cp exemple_3/output.log ${LOCAL_ARTIFACT_PATH} || true"
         }
     }
 }
