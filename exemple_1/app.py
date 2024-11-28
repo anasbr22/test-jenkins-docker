@@ -1,6 +1,6 @@
 
 print("Bonjour Miasd")
-print("2025")
+print("2025 2025")
 
 def add(a, b):
     return a + b
